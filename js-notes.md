@@ -252,3 +252,75 @@ fetch('link').then(
     return fetch(`link/${response.data}`)
 })
 ```
+
+# Event loop, promises and other stuff
+Here we can see important example of JS web browser interpritator's queue of call stack:
+```js
+console.log('pre-pivot');
+setTimeout(() => {
+	return  console.log(1);
+});
+
+setTimeout(() => {
+	return console.log(2);
+})
+
+const prom = new Promise(resolve => resolve());
+
+prom.then(data => console.log(data));
+console.log('pivot')
+setTimeout(() => console.log(3));
+```
+Result will return this:
+```bash
+$ -> node file.js
+pre-pivot
+pivot
+undefined
+1
+2
+3
+```
+
+That's happening in case of JS returns everything by it's readyness. That means, our global console calls are ready first, even if they are in the different order and places (just as always in async shit). After we resolving our Promise and only after that we have setTimeout result, that means that timeout couldn't be less than 1 ms and it cannot be returned instantly. It just resolving undefined state faster than that, in other cases it will return something else first if, maybe, our promise resolving will be slower. Simple parallelisation via async shit.
+
+If we need to control promise resolving by timeout, we'll need to use callbacks and binding by .then().
+
+# Cookies
+I really dunno why they don't bring it to the standard library. They have tons of shit, but not this?
+```js
+function setCookie(cname, cvalue, exdays) {
+  const d = new Date();
+  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+  let expires = "expires="+d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+  let name = cname + "=";
+  let ca = document.cookie.split(';');
+  for(let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+function checkCookie() {
+  let user = getCookie("username");
+  if (user != "") {
+    alert("Welcome again " + user);
+  } else {
+    user = prompt("Please enter your name:", "");
+    if (user != "" && user != null) {
+      setCookie("username", user, 365);
+    }
+  }
+}
+```
+
