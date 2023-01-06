@@ -286,6 +286,45 @@ That's happening in case of JS returns everything by it's readyness. That means,
 
 If we need to control promise resolving by timeout, we'll need to use callbacks and binding by .then().
 
+### Closer about event loop
+Js is syncronous as itself, but inside browser it's fully async by using WEB API.
+
+Here some visualisation: https://bool.dev/blog/detail/obyasnenie-event-loop-v-javascript-s-pomoshchyu-vizualizatsii
+
+But if link does not works, here we have four things for our functions running:
+- Callstack
+- Eventloop
+- Web API
+- Queue
+
+So, here some funcs:
+```js
+const foo = () => console.log("First");
+const bar = () => setTimeout(() => console.log("Second"), 500);
+const baz = () => console.log("Third");
+
+bar();
+foo();
+baz();
+```
+Result
+```bash
+First
+Third
+Second
+```
+
+As I said before, we have callstack where our funcs are running and console logging. In the code, our "bar" func calling first, but it using setTimeout, which is a part of WEB API, so first we wait 500ms (that's also why our previous example works like that). But we do not wait for all funcs, only for this one "bar".
+
+After we're calling foo and baz. They going directly into callstack and running instantly. In turn, "bar", after 500ms going to the queue, like other async funcs (using setTimeout and setInterval) and eventloop running them in order of their readyness.
+
+Eventloop is just a worker, who getting ready func and running it to the callstack. Here the full step list:
+- Calling bar, bar returns setTimeout
+- In that case it's popping our the callstack and putting inside WEBAPI
+- Timer tunning and now we run next func, here is no troubles, we getting "First" instantly. It's popping out the callstack and our "bar"'s callback going to the Queue
+- baz logging "Third", now callstack is clear and Event Loop sees, that it's free and going to use all funcs inside Queue. Now event loop getting bar's callback and putting it to the callstack
+- callback logs "Second"
+
 # Cookies
 I really dunno why they don't bring it to the standard library. They have tons of shit, but not this?
 ```js
