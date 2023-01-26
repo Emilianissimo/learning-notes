@@ -108,7 +108,7 @@ But if we have nested, object, we'll need to make deep copying, that uses loop f
 
 # THIS
 
-In the lax (not strict) it is a link to the current object (just as in php), but in strict mode can me different.
+In the lax (not strict) it is a link to the current object (just as in php), but in strict mode can be different.
 
 ### Global context
 In global context (outside functions) <b>this</b> is linking to the global object, no matter the mode (strict or not):
