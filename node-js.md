@@ -51,3 +51,5 @@ function Hello() {
 }; 
 module.exports = Hello;
 ```
+# Command line args
+To take command line args, we need just to call process.args -> it returns an array of passing args to this main func (running file).
