@@ -19,7 +19,7 @@
           curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh
           curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
           source ~/.bashrc
-          nvm install v18.2.0
+          nvm install v19.2.0
           sudo apt install npm
           ```
       - Install nginx
@@ -29,7 +29,7 @@
           ```
       - Set your project into ```/var/www/project_folder```. If folders are not exist, just create them.
       - run ```npm install```
-      - Build the project:
+      - Build the project (if there any problem, END_OF_LIFECYCLE, for example, update node version to the latest):
         - ```
           npm run build
           ```
